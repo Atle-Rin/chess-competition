@@ -10,7 +10,7 @@ King::King(const std::pair<int, int> &posIn) : Piece(posIn) {
     else setType(bKing);
 }
 
-King::~King() = default;
+King::~King() {}
 
 std::vector<std::pair<int, int>> King::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
@@ -76,7 +76,7 @@ Queen::Queen(const std::pair<int, int> &posIn) : Piece(posIn) {
     else setType(bQueen);
 }
 
-Queen::~Queen() = default;
+Queen::~Queen() {}
 
 std::vector<std::pair<int, int>> Queen::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
@@ -157,7 +157,7 @@ Rook::Rook(const std::pair<int, int> &posIn) : Piece(posIn) {
     else setType(bRook);
 }
 
-Rook::~Rook() = default;
+Rook::~Rook() {}
 
 std::vector<std::pair<int, int>> Rook::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
@@ -202,7 +202,7 @@ Bishop::Bishop(const std::pair<int, int> &posIn) : Piece(posIn) {
     else setType(bBishop);
 }
 
-Bishop::~Bishop() = default;
+Bishop::~Bishop() {}
 
 std::vector<std::pair<int, int>> Bishop::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
@@ -249,7 +249,7 @@ Knight::Knight(const std::pair<int, int> &posIn) : Piece(posIn) {
     else setType(bKnight);
 }
 
-Knight::~Knight() = default;
+Knight::~Knight() {}
 
 std::vector<std::pair<int, int>> Knight::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
@@ -322,7 +322,7 @@ Pawn::Pawn(const std::pair<int, int> &posIn, bool inWhite) : Piece(posIn) {
     else setType(bPawn);
 }
 
-Pawn::~Pawn() = default;
+Pawn::~Pawn() {}
 
 std::vector<std::pair<int, int>> Pawn::GetValidMoves() {
     std::vector<std::pair<int, int>> retList;
