@@ -9,7 +9,7 @@ namespace ChessSimulator {
  * @param fen The board as FEN
  * @return std::string The move as UCI
  */
-    std::string Move(std::string fen);
+    std::string Move(std::string fen,  int timeLimitMs = 10000);
     std::vector<std::string> orderedMovesByMaterialGain(std::vector<std::string> &moves);
     std::pair<int, int> findLocFromMove(std::string move, bool findTarget = false);
 } // namespace ChessSimulator
