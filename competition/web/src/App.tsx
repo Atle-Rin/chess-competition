@@ -492,8 +492,8 @@ function App() {
                 <label htmlFor={`bot-${bot.username}`} className="bot-item-label">
                   <img src={bot.avatar} alt={bot.username} className="bot-item-avatar" />
                   <div className="bot-item-info">
-                    <span className="bot-item-name">{bot.username}</span>
-                    <span className="bot-item-date">{formatDate(bot.updatedAt)}</span>
+                    <span className="bot-item-name" title={bot.updatedAt || ''}>{bot.username}</span>
+                    <span className="bot-item-date" title={bot.updatedAt || ''}>{formatDate(bot.updatedAt)}</span>
                   </div>
                 </label>
               </div>
