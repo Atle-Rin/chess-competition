@@ -2,6 +2,8 @@ export interface BotInfo {
   username: string;
   avatar: string;
   forkUrl: string;
+  /** ISO timestamp of the most recent commit/fork update; may be missing */
+  updatedAt?: string;
 }
 
 export type PlayerType = 'bot' | 'human';
@@ -66,12 +68,30 @@ export type GameWinReason =
   | 'draw-insufficient'
   | 'draw-50-move'
   | 'forfeit'
-  | 'time-advantage';
+  | 'time-advantage'
+  | 'draw';
 
 export interface MatchResult {
   winner: BotInfo;
   loser: BotInfo;
   reason: GameWinReason;
+}
+
+/** A fully recorded game with moves, for replay. */
+export interface RecordedGame {
+  whiteBot: BotInfo;
+  blackBot: BotInfo;
+  moves: MoveRecord[];
+  result: GameResult;
+  reason: GameWinReason;
+}
+
+export interface RoundRobinStanding {
+  bot: BotInfo;
+  wins: number;
+  losses: number;
+  draws: number;
+  totalTimeMs: number;
 }
 
 export interface TournamentMatch {
@@ -113,8 +133,12 @@ export interface TournamentState {
   bracketsViewerData?: BracketsViewerData | null;
   /** Current match participants for "Now playing" display */
   currentMatchBots?: { white: BotInfo; black: BotInfo } | null;
-  /** Log of match results (one line per game): white vs black, winner, reason */
-  matchLog?: { white: string; black: string; winner: string; reason: string }[];
+  /** Log of match results (one line per game): white vs black, winner, reason + full recording */
+  matchLog?: { white: string; black: string; winner: string; reason: string; recording: RecordedGame }[];
+  /** Round-robin standings (only set for round-robin tournaments) */
+  roundRobinStandings?: RoundRobinStanding[];
+  /** Round-robin progress string, e.g. "3 / 12" */
+  roundRobinProgress?: string;
 }
 
 // Messages from main thread -> worker
