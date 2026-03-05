@@ -1,8 +1,5 @@
 #include "chess-mover.h"
 
-void chessMover::makeInstance() {
-    gChessBot = new chessMover();
-}
 
 void chessMover::killInstance() {
     delete gChessBot;
@@ -18,57 +15,60 @@ chessMover::~chessMover() {
 }
 
 void chessMover::createBoard(std::string boardFEN) {
+    board = boardState();
     std::string blackPieceIDs = "kqrbnp";
     std::string whitePieceIDs = "KQRBNP";
+    std::string SLASH = "/";
     int L = 0;
     int N = 0;
     int i = 0;
     for (i = 0; L < 8; i++) {
+        if (boardFEN[i] == SLASH[0]) i++;
         if (boardFEN[i] == blackPieceIDs[0]) {
             board.theBoard[L][N] = bKing;
             N++;
         }
-        if (boardFEN[i] == blackPieceIDs[1]) {
+        else if (boardFEN[i] == blackPieceIDs[1]) {
             board.theBoard[L][N] = bQueen;
             N++;
         }
-        if (boardFEN[i] == blackPieceIDs[2]) {
+        else if (boardFEN[i] == blackPieceIDs[2]) {
             board.theBoard[L][N] = bRook;
             N++;
         }
-        if (boardFEN[i] == blackPieceIDs[3]) {
+        else if (boardFEN[i] == blackPieceIDs[3]) {
             board.theBoard[L][N] = bBishop;
             N++;
         }
-        if (boardFEN[i] == blackPieceIDs[4]) {
+        else if (boardFEN[i] == blackPieceIDs[4]) {
             board.theBoard[L][N] = bKnight;
             N++;
         }
-        if (boardFEN[i] == blackPieceIDs[5]) {
+        else if (boardFEN[i] == blackPieceIDs[5]) {
             board.theBoard[L][N] = bPawn;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[0]) {
+        else if (boardFEN[i] == whitePieceIDs[0]) {
             board.theBoard[L][N] = bKing;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[1]) {
+        else if (boardFEN[i] == whitePieceIDs[1]) {
             board.theBoard[L][N] = bQueen;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[2]) {
+        else if (boardFEN[i] == whitePieceIDs[2]) {
             board.theBoard[L][N] = bRook;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[3]) {
+        else if (boardFEN[i] == whitePieceIDs[3]) {
             board.theBoard[L][N] = bBishop;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[4]) {
+        else if (boardFEN[i] == whitePieceIDs[4]) {
             board.theBoard[L][N] = bKnight;
             N++;
         }
-        if (boardFEN[i] == whitePieceIDs[5]) {
+        else if (boardFEN[i] == whitePieceIDs[5]) {
             board.theBoard[L][N] = bPawn;
             N++;
         }
@@ -116,18 +116,18 @@ void chessMover::copyBoard(boardState &copy) {
 void chessMover::findAllPieces() {
     for (int L = 0; L < 8; L++) {
         for (int N = 0; N < 8; N++) {
-            if (board.theBoard[L][N] == wKing && isWhite) pieces.push_back(new King(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wQueen && isWhite) pieces.push_back(new Queen(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wRook && isWhite) pieces.push_back(new Rook(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wBishop && isWhite) pieces.push_back(new Bishop(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wKnight && isWhite) pieces.push_back(new Knight(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wPawn && isWhite) pieces.push_back(new Pawn(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bKing && isWhite) pieces.push_back(new King(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bQueen && isWhite) pieces.push_back(new Queen(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bRook && isWhite) pieces.push_back(new Rook(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bBishop && isWhite) pieces.push_back(new Bishop(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bKnight && isWhite) pieces.push_back(new Knight(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bPawn && isWhite) pieces.push_back(new Pawn(std::make_pair(L,N), false));
+            if (board.theBoard[L][N] == wKing) pieces.push_back(new King(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == wQueen) pieces.push_back(new Queen(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == wRook) pieces.push_back(new Rook(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == wBishop) pieces.push_back(new Bishop(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == wKnight) pieces.push_back(new Knight(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == wPawn) pieces.push_back(new Pawn(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bKing) pieces.push_back(new King(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bQueen) pieces.push_back(new Queen(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bRook) pieces.push_back(new Rook(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bBishop) pieces.push_back(new Bishop(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bKnight) pieces.push_back(new Knight(std::make_pair(L,N)));
+            if (board.theBoard[L][N] == bPawn) pieces.push_back(new Pawn(std::make_pair(L,N), false));
         }
     }
 }

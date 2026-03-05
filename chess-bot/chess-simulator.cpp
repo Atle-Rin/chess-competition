@@ -30,7 +30,7 @@ std::string ChessSimulator::Move(std::string fen,  int timeLimitMs) {
   auto move = moves[dist(gen)];
   return chess::uci::moveToUci(move);*/
 
-  gChessBot->makeInstance();
+  chessMover::makeInstance();
   gChessBot->createBoard(fen);
   std::vector<std::string> allMoves = gChessBot->getAllValidMoves();
   allMoves = orderedMovesByMaterialGain(allMoves);
