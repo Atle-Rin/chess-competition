@@ -43,7 +43,7 @@ class King : public Piece {
 public:
 
     explicit King(const std::pair<int, int> &posIn);
-    ~King() override;
+    ~King();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
@@ -55,7 +55,7 @@ class Queen : public Piece {
 public:
 
     explicit Queen(const std::pair<int, int> &posIn);
-    ~Queen() override;
+    ~Queen();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
@@ -66,7 +66,7 @@ class Rook : public Piece {
 public:
 
     explicit Rook(const std::pair<int, int> &posIn);
-    ~Rook() override;
+    ~Rook();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
@@ -77,7 +77,7 @@ class Bishop : public Piece {
 public:
 
     explicit Bishop(const std::pair<int, int> &posIn);
-    ~Bishop() override;
+    ~Bishop();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
@@ -88,7 +88,7 @@ class Knight : public Piece {
 public:
 
     explicit Knight(const std::pair<int, int> &posIn);
-    ~Knight() override;
+    ~Knight();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
@@ -99,7 +99,7 @@ class Pawn : public Piece {
 public:
 
     explicit Pawn(const std::pair<int, int> &posIn, bool inWhite = true);
-    ~Pawn() override;
+    ~Pawn();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
 
