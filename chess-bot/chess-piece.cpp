@@ -5,6 +5,8 @@ Piece::Piece(std::pair<int, int> posIn) {
     positionLN = posIn;
 }
 
+Piece::~Piece() {}
+
 King::King(const std::pair<int, int> &posIn) : Piece(posIn) {
     if (gChessBot->getIsWhite()) setType(wKing);
     else setType(bKing);

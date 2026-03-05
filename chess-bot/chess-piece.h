@@ -25,7 +25,7 @@ class Piece {
 public:
 
     explicit Piece(std::pair<int, int> posIn);
-    virtual ~Piece() = 0;
+    ~Piece();
 
     std::pair<int, int> getPosition() { return positionLN; }
     void setPosition(int x, int y) { positionLN = std::make_pair(x, y); }
