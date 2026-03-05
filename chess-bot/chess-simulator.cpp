@@ -38,7 +38,7 @@ std::string ChessSimulator::Move(std::string fen,  int timeLimitMs) {
   return allMoves[0]; //return the move that gives the greatest taken-material value, don't consider incoming losses yet.
 }
 
-std::vector<std::string> orderedMovesByMaterialGain(std::vector<std::string> &moves) {
+std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<std::string> &moves) {
   std::unordered_map<std::string, int> materialValuedMoves;
 
   for (int i = 0; i < moves.size(); i++) {
@@ -108,7 +108,7 @@ std::vector<std::string> orderedMovesByMaterialGain(std::vector<std::string> &mo
   return orderedMoves;
 }
 
-std::pair<int, int> findLocFromMove(std::string move, bool findTarget) {
+std::pair<int, int> ChessSimulator::findLocFromMove(std::string move, bool findTarget) {
   std::pair<int, int> ret;
   int start = 0;
   if (findTarget) start += 2;
