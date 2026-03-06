@@ -14,11 +14,11 @@ namespace ChessSimulator {
  */
     std::string Move(std::string fen,  int timeLimitMs = 10000);
     std::vector<std::string> orderedMovesByMaterialGain(std::vector<std::string> &moves, int depth = 0);
-    int getMoveCaptureValue(std::string move, bool tryingEnemy = false);
-    int getMoveCaptureValue(std::pair<int, int> move, bool tryingEnemy = false);
+    int getMoveCaptureValue(std::string move, bool &leavesCheck, bool tryingEnemy = false);
+    int getMoveCaptureValue(std::pair<int, int> move, bool &leavesCheck, bool tryingEnemy = false);
     std::pair<int, int> findLocFromMove(std::string move, bool findTarget = false);
-    int getMoveAttackValue(std::string move, bool tryingEnemy = false);
-    int tryMoveSeeEnemyAnswer(std::string move, int depth);
+    int getMoveAttackValue(std::string move, bool &leavesCheck, bool tryingEnemy = false);
+    int tryMoveSeeEnemyAnswer(std::string move, bool &leavesCheck, int depth);
     void tryMove(std::string move);
 } // namespace ChessSimulator
 
@@ -120,6 +120,7 @@ public:
     ~Pawn();
 
     std::vector<std::pair<int, int>> GetValidMoves() override;
+    void setHasMoved(bool inVal) { hasMoved = inVal; }
 
 private:
     bool hasMoved = false;
