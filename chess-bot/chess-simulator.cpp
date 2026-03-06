@@ -22,53 +22,11 @@ std::string ChessSimulator::Move(std::string fen,  int timeLimitMs) {
   return allMoves[0]; //return the move that gives the greatest taken-material value, don't consider incoming losses yet.
 }
 
-std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<std::string> &moves) {
+std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<std::string> &moves, int depth) {
   std::unordered_map<std::string, int> materialValuedMoves;
 
   for (int i = 0; i < moves.size(); i++) {
-    int moveValue = 0;
-    if (chessMover::getInstance()->getIsWhite()) {
-      switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
-        case bQueen:
-          moveValue = 9;
-          break;
-        case bRook:
-          moveValue = 5;
-          break;
-        case bBishop:
-          moveValue = 3;
-          break;
-        case bKnight:
-          moveValue = 3;
-          break;
-        case bPawn:
-          moveValue = 1;
-          break;
-        default:
-          break;
-      }
-    }
-    else {
-      switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
-        case wQueen:
-          moveValue = 9;
-          break;
-        case wRook:
-          moveValue = 5;
-          break;
-        case wBishop:
-          moveValue = 3;
-          break;
-        case wKnight:
-          moveValue = 3;
-          break;
-        case wPawn:
-          moveValue = 1;
-          break;
-        default:
-          break;
-      }
-    }
+    int moveValue = tryMoveSeeEnemyAnswer(moves[i], depth);
     materialValuedMoves.insert({moves[i], moveValue});
   }
 
@@ -86,6 +44,116 @@ std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<
   return orderedMoves;
 }
 
+int ChessSimulator::getMoveCaptureValue(std::string move, bool tryingEnemy) {
+    int moveValue = 0;
+    if (chessMover::getInstance()->getIsWhite()) {
+        switch (chessMover::getInstance()->getBoardPos(findLocFromMove(move, true))) {
+            case bKing:
+                if (tryingEnemy) moveValue = 99999999;
+                else moveValue = 999;
+                break;
+            case bQueen:
+                moveValue = 9;
+                break;
+            case bRook:
+                moveValue = 5;
+                break;
+            case bBishop:
+                moveValue = 3;
+                break;
+            case bKnight:
+                moveValue = 3;
+                break;
+            case bPawn:
+                moveValue = 1;
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        switch (chessMover::getInstance()->getBoardPos(findLocFromMove(move, true))) {
+            case wKing:
+                if (tryingEnemy) moveValue = 9999;
+                else moveValue = 999;
+                break;
+            case wQueen:
+                moveValue = 9;
+                break;
+            case wRook:
+                moveValue = 5;
+                break;
+            case wBishop:
+                moveValue = 3;
+                break;
+            case wKnight:
+                moveValue = 3;
+                break;
+            case wPawn:
+                moveValue = 1;
+                break;
+            default:
+                break;
+        }
+    }
+    return moveValue;
+}
+
+int ChessSimulator::getMoveCaptureValue(std::pair<int, int> move, bool tryingEnemy) {
+    int moveValue = 0;
+    if (chessMover::getInstance()->getIsWhite()) {
+        switch (chessMover::getInstance()->getBoardPos(move)) {
+            case bKing:
+                if (tryingEnemy) moveValue = 99999;
+                else moveValue = 999;
+                break;
+            case bQueen:
+                moveValue = 9;
+                break;
+            case bRook:
+                moveValue = 5;
+                break;
+            case bBishop:
+                moveValue = 3;
+                break;
+            case bKnight:
+                moveValue = 3;
+                break;
+            case bPawn:
+                moveValue = 1;
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        switch (chessMover::getInstance()->getBoardPos(move)) {
+            case wKing:
+                if (tryingEnemy) moveValue = 9999;
+                else moveValue = 999;
+                break;
+            case wQueen:
+                moveValue = 9;
+                break;
+            case wRook:
+                moveValue = 5;
+                break;
+            case wBishop:
+                moveValue = 3;
+                break;
+            case wKnight:
+                moveValue = 3;
+                break;
+            case wPawn:
+                moveValue = 1;
+                break;
+            default:
+                break;
+        }
+    }
+    return moveValue;
+}
+
 std::pair<int, int> ChessSimulator::findLocFromMove(std::string move, bool findTarget) {
   std::pair<int, int> ret;
   int start = 0;
@@ -93,10 +161,70 @@ std::pair<int, int> ChessSimulator::findLocFromMove(std::string move, bool findT
   char letter = move[start];
   ret.second = (int)(letter - 97);
   start++;
-  ret.first = std::stoi(move.substr(start)) - 1;
+  ret.first = 8 - std::stoi(move.substr(start));
   return ret;
 }
 
+int ChessSimulator::getMoveAttackValue(std::string move, bool tryingEnemy) {
+    Piece* movedPiece = chessMover::getInstance()->getPieceAtLocation(findLocFromMove(move));
+    if (movedPiece == nullptr) return -999;
+    std::pair<int, int> oldPos = movedPiece->getPosition();
+    std::pair<int, int> target = findLocFromMove(move, true);
+    movedPiece->setPosition(target.first, target.second);
+    std::vector<std::pair<int, int>> newMoves = movedPiece->GetValidMoves();
+    int retValue = 0;
+    for (auto move : newMoves) {
+        retValue += getMoveCaptureValue(move, tryingEnemy);
+    }
+    movedPiece->setPosition(oldPos.first, oldPos.second);
+    return retValue;
+}
+
+int ChessSimulator::tryMoveSeeEnemyAnswer(std::string move, int depth) {
+    int ret = 0;
+    ret += getMoveCaptureValue(move) * 10;
+    ret += getMoveAttackValue(move);
+
+    if (depth >= 2) return ret;
+
+    chessMover saveBoard;
+    saveBoard.copyBoard(chessMover::getInstance()->getBoard());
+    saveBoard.setPiecesStorage(chessMover::getInstance()->getPiecesStorage());
+    saveBoard.setIsWhite(chessMover::getInstance()->getIsWhite());
+    saveBoard.setCastlesString(chessMover::getInstance()->getCastlesString());
+    saveBoard.setPassantsString(chessMover::getInstance()->getPassantsString());
+    saveBoard.setHalfMoveNum(chessMover::getInstance()->getHalfMoveNum());
+    saveBoard.setTurnCount(chessMover::getInstance()->getTurnCount());
+
+    tryMove(move);
+
+    std::vector<std::string> allMoves = chessMover::getInstance()->getAllValidMoves();
+    allMoves = orderedMovesByMaterialGain(allMoves, depth + 1);
+
+    ret -= getMoveCaptureValue(allMoves[0], true) * 10;
+    ret -= getMoveAttackValue(allMoves[0]);
+
+    chessMover::getInstance()->copyBoard(saveBoard.getBoard());
+    chessMover::getInstance()->setPiecesStorage(saveBoard.getPiecesStorage());
+    chessMover::getInstance()->setIsWhite(saveBoard.getIsWhite());
+    chessMover::getInstance()->setCastlesString(saveBoard.getCastlesString());
+    chessMover::getInstance()->setPassantsString(saveBoard.getPassantsString());
+    chessMover::getInstance()->setHalfMoveNum(saveBoard.getHalfMoveNum());
+    chessMover::getInstance()->setTurnCount(saveBoard.getTurnCount());
+
+    return ret / (depth + 1);
+}
+
+void ChessSimulator::tryMove(std::string move) {
+    chessMover::getInstance()->setIsWhite(!chessMover::getInstance()->getIsWhite());
+    Piece* movedPiece = chessMover::getInstance()->getPieceAtLocation(findLocFromMove(move));
+    if (movedPiece == nullptr) return;
+    std::pair<int, int> oldPos = movedPiece->getPosition();
+    std::pair<int, int> target = findLocFromMove(move, true);
+    movedPiece->setPosition(target.first, target.second);
+    chessMover::getInstance()->setBoardPos(oldPos, Empty);
+    chessMover::getInstance()->setBoardPos(target, movedPiece->getType());
+}
 
 Piece::Piece(std::pair<int, int> posIn) {
     positionLN = posIn;
@@ -484,7 +612,6 @@ std::vector<std::pair<int, int>> Knight::GetValidMoves() {
 
     checkPosition.second -= 1;
     checkPosition.first += 1;
-    if (chessMover::getInstance()->getBoardPos(checkPosition) == pieceType::Empty) retList.push_back(checkPosition);
     checkRes = chessMover::getInstance()->getBoardPos(checkPosition);
     if (checkRes == pieceType::Empty) retList.push_back(checkPosition);
     else if (checkRes < 6 && !chessMover::getInstance()->getIsWhite() && checkRes != NullSpace) retList.push_back(checkPosition);
@@ -553,16 +680,23 @@ std::vector<std::pair<int, int>> Pawn::GetValidMoves() {
     else checkPosition.first += 1;
     pieceType checkRes = chessMover::getInstance()->getBoardPos(checkPosition);
     if (checkRes == pieceType::Empty) retList.push_back(checkPosition);
-    else if (checkRes < 6 && !chessMover::getInstance()->getIsWhite() && checkRes != NullSpace) retList.push_back(checkPosition);
+
+    checkPosition.second += 1;
+    checkRes = chessMover::getInstance()->getBoardPos(checkPosition);
+    if (checkRes < 6 && !chessMover::getInstance()->getIsWhite() && checkRes != NullSpace && checkRes != Empty) retList.push_back(checkPosition);
+    else if (checkRes >= 6 && chessMover::getInstance()->getIsWhite()) retList.push_back(checkPosition);
+
+    checkPosition.second -= 2;
+    checkRes = chessMover::getInstance()->getBoardPos(checkPosition);
+    if (checkRes < 6 && !chessMover::getInstance()->getIsWhite() && checkRes != NullSpace && checkRes != Empty) retList.push_back(checkPosition);
     else if (checkRes >= 6 && chessMover::getInstance()->getIsWhite()) retList.push_back(checkPosition);
 
     if (!hasMoved) {
+        checkPosition.second += 1;
         if (isWhite) checkPosition.first -= 1;
         else checkPosition.first += 1;
         checkRes = chessMover::getInstance()->getBoardPos(checkPosition);
         if (checkRes == pieceType::Empty) retList.push_back(checkPosition);
-        else if (checkRes < 6 && !chessMover::getInstance()->getIsWhite() && checkRes != NullSpace) retList.push_back(checkPosition);
-        else if (checkRes >= 6 && chessMover::getInstance()->getIsWhite()) retList.push_back(checkPosition);
     }
 
     std::vector<std::pair<int, int>> passant = chessMover::getInstance()->getPassants();
@@ -745,7 +879,6 @@ void chessMover::findAllPieces() {
     }
 }
 
-
 std::vector<std::string> chessMover::getAllValidMoves() {
     std::vector<std::string> retList;
 
@@ -784,6 +917,12 @@ pieceType chessMover::getBoardPos(std::pair<int, int> checkPos) {
     if (checkPos.first <= -1 || checkPos.second <= -1) return NullSpace;
     if (checkPos.first >= 8 || checkPos.second >= 8) return NullSpace;
     return this->board.theBoard[checkPos.first][checkPos.second];
+}
+
+void chessMover::setBoardPos(std::pair<int, int> checkPos, pieceType newVal) {
+    if (checkPos.first <= -1 || checkPos.second <= -1) return;
+    if (checkPos.first >= 8 || checkPos.second >= 8) return;
+    this->board.theBoard[checkPos.first][checkPos.second] = newVal;
 }
 
 std::vector<std::pair<int, int>> chessMover::getCastles() {
@@ -867,4 +1006,11 @@ std::vector<std::pair<int, int> > chessMover::getPassantTargets() {
     }
 
     return retList;
+}
+
+Piece *chessMover::getPieceAtLocation(std::pair<int, int> checkPos) {
+    for (auto piece : pieces) {
+        if (piece->getPosition() == checkPos) return piece;
+    }
+    return nullptr;
 }
