@@ -436,8 +436,8 @@ std::vector<std::pair<int, int>> Knight::GetValidMoves() {
 }
 
 Pawn::Pawn(const std::pair<int, int> &posIn, bool inWhite) : Piece(posIn) {
-    if (inWhite && posIn.first == 1) hasMoved = false;
-    else if (!inWhite && posIn.first == 6) hasMoved = false;
+    if (!inWhite && posIn.first == 1) hasMoved = false;
+    else if (inWhite && posIn.first == 6) hasMoved = false;
     else hasMoved = true;
     isWhite = inWhite;
     if (isWhite) setType(wPawn);
