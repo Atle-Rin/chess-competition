@@ -19,7 +19,7 @@ public:
     static void makeInstance() {
         gChessBot = new chessMover();
     }
-
+    static chessMover* getInstance() { return gChessBot; }
     static void killInstance();
 
     chessMover();

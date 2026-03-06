@@ -49,27 +49,27 @@ void chessMover::createBoard(std::string boardFEN) {
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[0]) {
-            board.theBoard[L][N] = bKing;
+            board.theBoard[L][N] = wKing;
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[1]) {
-            board.theBoard[L][N] = bQueen;
+            board.theBoard[L][N] = wQueen;
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[2]) {
-            board.theBoard[L][N] = bRook;
+            board.theBoard[L][N] = wRook;
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[3]) {
-            board.theBoard[L][N] = bBishop;
+            board.theBoard[L][N] = wBishop;
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[4]) {
-            board.theBoard[L][N] = bKnight;
+            board.theBoard[L][N] = wKnight;
             N++;
         }
         else if (boardFEN[i] == whitePieceIDs[5]) {
-            board.theBoard[L][N] = bPawn;
+            board.theBoard[L][N] = wPawn;
             N++;
         }
         else {
@@ -116,18 +116,54 @@ void chessMover::copyBoard(boardState &copy) {
 void chessMover::findAllPieces() {
     for (int L = 0; L < 8; L++) {
         for (int N = 0; N < 8; N++) {
-            if (board.theBoard[L][N] == wKing) pieces.push_back(new King(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wQueen) pieces.push_back(new Queen(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wRook) pieces.push_back(new Rook(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wBishop) pieces.push_back(new Bishop(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wKnight) pieces.push_back(new Knight(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == wPawn) pieces.push_back(new Pawn(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bKing) pieces.push_back(new King(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bQueen) pieces.push_back(new Queen(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bRook) pieces.push_back(new Rook(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bBishop) pieces.push_back(new Bishop(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bKnight) pieces.push_back(new Knight(std::make_pair(L,N)));
-            if (board.theBoard[L][N] == bPawn) pieces.push_back(new Pawn(std::make_pair(L,N), false));
+            if (board.theBoard[L][N] == wKing) {
+                King* newKing = new King(std::make_pair(L, N));
+                pieces.push_back(newKing);
+            }
+            if (board.theBoard[L][N] == wQueen) {
+                Queen* newQueen = new Queen(std::make_pair(L, N));
+                pieces.push_back(newQueen);
+            }
+            if (board.theBoard[L][N] == wRook) {
+                Rook* newRook = new Rook(std::make_pair(L, N));
+                pieces.push_back(newRook);
+            }
+            if (board.theBoard[L][N] == wBishop) {
+                Bishop* newBishop = new Bishop(std::make_pair(L, N));
+                pieces.push_back(newBishop);
+            }
+            if (board.theBoard[L][N] == wKnight) {
+                Knight* newKnight = new Knight(std::make_pair(L, N));
+                pieces.push_back(newKnight);
+            }
+            if (board.theBoard[L][N] == wPawn) {
+                Pawn* newPawn = new Pawn(std::make_pair(L, N));
+                pieces.push_back(newPawn);
+            }
+            if (board.theBoard[L][N] == bKing) {
+                King* newKing = new King(std::make_pair(L, N), false);
+                pieces.push_back(newKing);
+            }
+            if (board.theBoard[L][N] == bQueen) {
+                Queen* newQueen = new Queen(std::make_pair(L, N), false);
+                pieces.push_back(newQueen);
+            }
+            if (board.theBoard[L][N] == bRook) {
+                Rook* newRook = new Rook(std::make_pair(L, N), false);
+                pieces.push_back(newRook);
+            }
+            if (board.theBoard[L][N] == bBishop) {
+                Bishop* newBishop = new Bishop(std::make_pair(L, N), false);
+                pieces.push_back(newBishop);
+            }
+            if (board.theBoard[L][N] == bKnight) {
+                Knight* newKnight = new Knight(std::make_pair(L, N), false);
+                pieces.push_back(newKnight);
+            }
+            if (board.theBoard[L][N] == bPawn) {
+                Pawn* newPawn = new Pawn(std::make_pair(L, N), false);
+                pieces.push_back(newPawn);
+            }
         }
     }
 }
@@ -137,15 +173,17 @@ std::vector<std::string> chessMover::getAllValidMoves() {
     std::vector<std::string> retList;
 
     for (auto piece : pieces) {
-        std::vector<std::pair<int, int>> pieceMoves = piece->GetValidMoves();
+        std::vector<std::pair<int, int>> pieceMoves;
+        if (piece->getType() < 6 && isWhite) pieceMoves = piece->GetValidMoves();
+        if (piece->getType() >= 6 && !isWhite) pieceMoves = piece->GetValidMoves();
         for (auto move : pieceMoves) {
             std::string moveStr = "";
-            char letter = (char)(piece->getPosition().first + 97);
+            char letter = (char)(piece->getPosition().second + 97);
             moveStr += letter;
-            moveStr += std::to_string(piece->getPosition().second);
-            letter = (char)(move.first + 97);
+            moveStr += std::to_string(8 - piece->getPosition().first);
+            letter = (char)(move.second + 97);
             moveStr += letter;
-            moveStr += std::to_string(move.second);
+            moveStr += std::to_string(8 - move.first);
             if (piece->getType() == wPawn && move.first == 7) {
                 retList.push_back(moveStr + "q");
                 retList.push_back(moveStr + "r");
@@ -168,7 +206,7 @@ std::vector<std::string> chessMover::getAllValidMoves() {
 pieceType chessMover::getBoardPos(std::pair<int, int> checkPos) {
     if (checkPos.first <= -1 || checkPos.second <= -1) return NullSpace;
     if (checkPos.first >= 8 || checkPos.second >= 8) return NullSpace;
-    return board.theBoard[checkPos.first][checkPos.second];
+    return this->board.theBoard[checkPos.first][checkPos.second];
 }
 
 std::vector<std::pair<int, int>> chessMover::getCastles() {
@@ -176,10 +214,34 @@ std::vector<std::pair<int, int>> chessMover::getCastles() {
 
     std::string moves = "KQkq";
     for (int i = 0; i < castleMoves.size(); i++) {
-        if (castleMoves[i] == moves[0] && isWhite) retList.push_back(std::make_pair(6, 1));
-        if (castleMoves[i] == moves[1] && isWhite) retList.push_back(std::make_pair(2, 1));
-        if (castleMoves[i] == moves[2] && !isWhite) retList.push_back(std::make_pair(6, 8));
-        if (castleMoves[i] == moves[3] && !isWhite) retList.push_back(std::make_pair(2, 8));
+        if (castleMoves[i] == moves[0] && isWhite) {
+            std::pair<int, int> castlePair = std::make_pair(0, 5);
+            if (getBoardPos(castlePair) == Empty) {
+                castlePair.second++;
+                if (getBoardPos(castlePair) == Empty) retList.push_back(castlePair);
+            }
+        }
+        if (castleMoves[i] == moves[1] && isWhite) {
+            std::pair<int, int> castlePair = std::make_pair(0, 3);
+            if (getBoardPos(castlePair) == Empty) {
+                castlePair.second--;
+                if (getBoardPos(castlePair) == Empty) retList.push_back(castlePair);
+            }
+        }
+        if (castleMoves[i] == moves[2] && !isWhite) {
+            std::pair<int, int> castlePair = std::make_pair(7, 5);
+            if (getBoardPos(castlePair) == Empty) {
+                castlePair.second++;
+                if (getBoardPos(castlePair) == Empty) retList.push_back(castlePair);
+            }
+        }
+        if (castleMoves[i] == moves[3] && !isWhite) {
+            std::pair<int, int> castlePair = std::make_pair(7, 3);
+            if (getBoardPos(castlePair) == Empty) {
+                castlePair.second--;
+                if (getBoardPos(castlePair) == Empty) retList.push_back(castlePair);
+            }
+        }
     }
 
     return retList;
@@ -187,6 +249,8 @@ std::vector<std::pair<int, int>> chessMover::getCastles() {
 
 std::vector<std::pair<int, int>> chessMover::getPassants() {
     std::vector<std::pair<int, int>> retList;
+    std::string DASH = "-";
+    if (enPassantMoves[0] == DASH[0]) return retList;
 
     for (int i = 0; i < enPassantMoves.size(); i++) {
         std::pair<int, int> move;
@@ -214,6 +278,8 @@ std::vector<std::pair<int, int>> chessMover::getPassants() {
 
 std::vector<std::pair<int, int> > chessMover::getPassantTargets() {
     std::vector<std::pair<int, int>> retList;
+    std::string DASH = "-";
+    if (enPassantMoves[0] == DASH[0]) return retList;
 
     for (int i = 0; i < enPassantMoves.size(); i++) {
         std::pair<int, int> move;

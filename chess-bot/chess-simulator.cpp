@@ -15,24 +15,9 @@ std::string ChessSimulator::Move(std::string fen,  int timeLimitMs) {
   // extra points if you create your own board/move representation instead of
   // using the one provided by the library
 
-  /*
-  // here goes a random movement
-  chess::Board board(fen);
-  chess::Movelist moves;
-  chess::movegen::legalmoves(moves, board);
-  if(moves.size() == 0)
-    return "";
-
-  // get random move
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dist(0, moves.size() - 1);
-  auto move = moves[dist(gen)];
-  return chess::uci::moveToUci(move);*/
-
   chessMover::makeInstance();
-  gChessBot->createBoard(fen);
-  std::vector<std::string> allMoves = gChessBot->getAllValidMoves();
+  chessMover::getInstance()->createBoard(fen);
+  std::vector<std::string> allMoves = chessMover::getInstance()->getAllValidMoves();
   allMoves = orderedMovesByMaterialGain(allMoves);
 
   return allMoves[0]; //return the move that gives the greatest taken-material value, don't consider incoming losses yet.
@@ -43,8 +28,8 @@ std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<
 
   for (int i = 0; i < moves.size(); i++) {
     int moveValue = 0;
-    if (gChessBot->getIsWhite()) {
-      switch (gChessBot->getBoardPos(findLocFromMove(moves[i], true))) {
+    if (chessMover::getInstance()->getIsWhite()) {
+      switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
         case bKing:
           moveValue = 999;
           break;
@@ -68,7 +53,7 @@ std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<
       }
     }
     else {
-      switch (gChessBot->getBoardPos(findLocFromMove(moves[i], true))) {
+      switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
         case wKing:
           moveValue = 999;
           break;
@@ -115,6 +100,6 @@ std::pair<int, int> ChessSimulator::findLocFromMove(std::string move, bool findT
   char letter = move[start];
   ret.second = (int)(letter - 97);
   start++;
-  ret.first = std::stoi(move.substr(start));
+  ret.first = std::stoi(move.substr(start)) - 1;
   return ret;
 }
