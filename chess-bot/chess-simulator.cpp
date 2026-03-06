@@ -30,9 +30,6 @@ std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<
     int moveValue = 0;
     if (chessMover::getInstance()->getIsWhite()) {
       switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
-        case bKing:
-          moveValue = 999;
-          break;
         case bQueen:
           moveValue = 9;
           break;
@@ -54,9 +51,6 @@ std::vector<std::string> ChessSimulator::orderedMovesByMaterialGain(std::vector<
     }
     else {
       switch (chessMover::getInstance()->getBoardPos(findLocFromMove(moves[i], true))) {
-        case wKing:
-          moveValue = 999;
-          break;
         case wQueen:
           moveValue = 9;
           break;
